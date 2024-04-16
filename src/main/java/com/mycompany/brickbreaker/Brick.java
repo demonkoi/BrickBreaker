@@ -10,32 +10,38 @@ import java.awt.Color;
  *
  * @author lab_services_student
  */
-public class Brick implements Object{
-    
-    int x,y,height,width,health;
+public class Brick implements Object {
+
+    int x, y, height, width, health;
+    int damage = 0;
     Color color;
-    
-    
-    public Brick(int x, int y,int width,int height,int health){
+
+    public Brick(int x, int y, int width, int height, int health) {
         this.x = x;
         this.y = y;
         this.height = height;
         this.width = width;
         this.health = health;
-         switch (health){
-            case 0: color = Color.BLACK;
-            break;
-            case 1: color = Color.BLUE;
-            break;
-            case 2: color = Color.GREEN;
-            break;
-            case 3: color = Color.darkGray;
+        switch (health) {
+            case 0:
+                color = Color.BLACK;
+                break;
+            case 1:
+                color = Color.BLUE;
+                break;
+            case 2:
+                color = Color.GREEN;
+                break;
+            case 3:
+                color = Color.darkGray;
         }
     }
-    public Boolean isAlive(){
-       boolean state = (health == 0) ? false : true;
-       return state;
+
+    public Boolean isAlive() {
+        boolean state = (health == 0) ? false : true;
+        return state;
     }
+
     @Override
     public int getLeft() {
         return x;
@@ -43,12 +49,13 @@ public class Brick implements Object{
 
     @Override
     public int getRight() {
-        return x+width;
+        return x + width;
     }
-    
-    public Color getColor(){
+
+    public Color getColor() {
         return color;
     }
+
     @Override
     public int getTop() {
         return y;
@@ -56,12 +63,12 @@ public class Brick implements Object{
 
     @Override
     public int getBottom() {
-        return y+height;
+        return y + height;
     }
 
     @Override
     public int getLength() {
-       return width;
+        return width;
     }
 
     @Override
@@ -71,26 +78,33 @@ public class Brick implements Object{
 
     @Override
     public int getSpeedx() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from
+                                                                       // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
     public int getSpeedy() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from
+                                                                       // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
     public void destroy() {
         health--;
-         switch (health){
-            case 0: color = Color.BLACK;
-            break;
-            case 1: color = Color.BLUE;
-            break;
-            case 2: color = Color.GREEN;
-            break;
-            case 3: color = Color.darkGray;
+        damage++;
+        switch (health) {
+            case 0:
+                color = Color.BLACK;
+                break;
+            case 1:
+                color = Color.BLUE;
+                break;
+            case 2:
+                color = Color.GREEN;
+                break;
+            case 3:
+                color = Color.darkGray;
         }
     }
-    
+
 }

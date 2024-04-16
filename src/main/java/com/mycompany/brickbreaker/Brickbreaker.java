@@ -16,16 +16,21 @@ import javax.swing.Timer;
  *
  * @author lab_services_student
  */
+// push worked
 public class Brickbreaker extends JFrame {
-    
+    public static final int WINDOW_WIDTH = 700;
+    public static final int WINDOW_HEIGHT = 790;
+    private static final int PADDING = 10;
     Gameboard game = new Gameboard();
+
     public static void main(String[] args) {
         System.out.println("Hello World!");
         JFrame board = new JFrame();
         board.setVisible(true);
-        board.setSize(510, 810);
+        board.setSize(WINDOW_HEIGHT + PADDING, WINDOW_HEIGHT + PADDING);
         board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+        board.setResizable(false);
+
         Gameboard game = new Gameboard();
         board.add(game);
         board.addKeyListener(game);
@@ -37,5 +42,4 @@ public class Brickbreaker extends JFrame {
         timer.start();
     }
 
-        
 }
