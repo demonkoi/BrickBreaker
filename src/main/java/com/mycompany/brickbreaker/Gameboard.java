@@ -10,6 +10,8 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -22,7 +24,7 @@ public class Gameboard extends JPanel implements KeyListener {
     public static final int WINDOW_WIDTH = Brickbreaker.WINDOW_WIDTH;
     public static final int WINDOW_HEIGHT = Brickbreaker.WINDOW_HEIGHT;
     int ballSpeedX = 5, BallSpeedY = 8;
-    Ball ball;
+    ArrayList<Ball> ball = new ArrayList<>();
     Paddle paddle;
     Grid grid;
     int score = 0;
@@ -30,21 +32,26 @@ public class Gameboard extends JPanel implements KeyListener {
     public void initGame() {
         grid = new Grid(30, 15, WINDOW_WIDTH, WINDOW_HEIGHT);
         grid.createGrid();
-        ball = new Ball(ballSpeedX, BallSpeedY, WINDOW_WIDTH / 2, (int) (WINDOW_HEIGHT * 0.8));
+        ball.add(new Ball(ballSpeedX, BallSpeedY, WINDOW_WIDTH / 2, (int) (WINDOW_HEIGHT * 0.8)));
         paddle = new Paddle(200);
+        System.out.println(ball.getFirst() + "call");
 
     }
 
     public void gameLogic() {
         System.out.println(WINDOW_WIDTH);
-        paddleCollision();
         for (int i = 0; i < grid.brick.length; i++) {
             for (int j = 0; j < grid.brick[0].length; j++) {
-                checkcol(ball, grid.brick[i][j]);
+
+                for (Ball ball : ball) {
+                    checkcol(ball, grid.brick[i][j]);
+                }
             }
         }
-        ball.move();
-        paddle.move();
+        for (Ball ball : ball) {
+            paddleCollision(ball);
+            ball.move();
+        }
     }
 
     public void checkcol(Ball a, Brick b) {
@@ -65,7 +72,7 @@ public class Gameboard extends JPanel implements KeyListener {
         }
     }
 
-    public void paddleCollision() {
+    public void paddleCollision(Ball ball) {
         // check collision
         if (ball.getRight() > paddle.x && ball.x < paddle.x + paddle.paddleWidth
                 && ball.y + ball.size >= paddle.y && ball.y < paddle.y + paddle.paddleHeight) {
@@ -86,7 +93,10 @@ public class Gameboard extends JPanel implements KeyListener {
         System.out.println(WINDOW_WIDTH + " " + WINDOW_HEIGHT);
         g.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
         grid.paint(g);
-        ball.paint(g);
+        for (Ball ball : ball) {
+            ball.paint(g);
+        }
+        
         paddle.paint(g);
         // add score
         g.setFont(new Font("serif", Font.BOLD, 15));
