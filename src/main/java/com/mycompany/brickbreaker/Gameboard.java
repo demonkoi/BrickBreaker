@@ -136,6 +136,7 @@ public class Gameboard extends JPanel implements KeyListener {
                 ball.getHeight());
         Rectangle rbrick = new Rectangle(brick.getLeft(), brick.getTop(), brick.getHeight(), brick.getLength());
         outerloop: if (rball.intersects(rbrick) && brick.isAlive()) {
+            Sounds.playSound("Hit.mp3");
             if (brick.destroy()){
                 powerUp.add(new PowerUp(brick.getLeft(), brick.getTop()));
             }
@@ -148,6 +149,8 @@ public class Gameboard extends JPanel implements KeyListener {
                 ball.revSetYSpeed();
                 break outerloop;
             }
+            //play sound
+            
         }
     }
 
