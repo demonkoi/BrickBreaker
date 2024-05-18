@@ -11,8 +11,9 @@ public class PowerUp implements Object {
     public PowerUp(int x, int y) {
         this.x = x;
         this.y = y;
-        Random rand = new Random(6);
-        this.type = type;
+        Random rand = new Random();
+        this.type = rand.nextInt(5) + 1;
+        System.out.println(type);
         ySpeed = 2;
     }
 

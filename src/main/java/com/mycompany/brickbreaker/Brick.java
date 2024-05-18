@@ -106,13 +106,11 @@ public class Brick implements Object {
             case 3:
                 color = Color.darkGray;
         }
-        return (r > 11);
+        return (r > 12);
     }
 
     @Override
     public void paint(Graphics g) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'paint'");
     }
 
 }

@@ -37,7 +37,7 @@ public class Paddle implements Object {
 
     public void move() {
         x += move;
-        if (x < 0 || x > Gameboard.WINDOW_WIDTH - paddleWidth) {
+        if (x < 0 && move < 0 || x > Gameboard.WINDOW_WIDTH - paddleWidth && move > 0) {
             move = 0;
             // System.out.println((Gameboard.WINDOW_WIDTH - paddleWidth));
         }

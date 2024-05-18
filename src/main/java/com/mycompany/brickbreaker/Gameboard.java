@@ -13,8 +13,11 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.text.html.HTMLDocument.Iterator;
 
 import org.w3c.dom.css.Rect;
+import java.awt.Rectangle;
+import java.util.ArrayList;
 
 /**
  *
@@ -38,11 +41,21 @@ public class Gameboard extends JPanel implements KeyListener {
         ball.add(new Ball(ballSpeedX, BallSpeedY, WINDOW_WIDTH / 2, (int) (WINDOW_HEIGHT * 0.8)));
         paddle = new Paddle(200);
         System.out.println(ball.getFirst() + "call");
+        powerUp.add(new PowerUp(100, 100));
 
     }
 
     public void gameLogic() {
-        System.out.println(WINDOW_WIDTH);
+       
+        //check brick collision
+        brickColl();
+        paddle.move();
+        powerUpMove();
+        // check collision for ball and paddle and powerup
+        checkballcoll();
+    }
+
+    public void brickColl(){
         for (int i = 0; i < grid.brick.length; i++) {
             for (int j = 0; j < grid.brick[0].length; j++) {
                 for (Ball ball : ball) {
@@ -50,59 +63,62 @@ public class Gameboard extends JPanel implements KeyListener {
                 }
             }
         }
-
-        paddle.move();
-
-        // check collision for ball and paddle and powerup
-        checkballcoll();
     }
-
+    public void powerUpMove() {
+        powerUp.forEach((power) -> {
+            power.move();
+        });
+    }
     public void checkballcoll() {
+
         if (ball.size() > 0 && life > 0) {
-            ball.forEach(ball -> {
+            ball.removeIf(ball -> {
                 paddleCollision(ball);
                 ball.move();
                 if (ball.y > WINDOW_HEIGHT) {
-                    this.ball.remove(ball);
                     System.out.println("ball size" + this.ball.size() + "life" + life);
-
+                    return true;
                 }
-                if (ball.y > WINDOW_HEIGHT) {
-                    life--;
-                    this.ball.add(new Ball(ballSpeedX, BallSpeedY, WINDOW_WIDTH / 2, (int) (WINDOW_HEIGHT * 0.8)));
-                }
+                return false;
             });
-        } else
+            if (ball.isEmpty()) {
+                life--;
+                ball.add(new Ball(ballSpeedX, BallSpeedY, WINDOW_WIDTH / 2, (int) (WINDOW_HEIGHT * 0.8)));
+            }
+        } else {
             System.out.println("Game Over press enter to restart");
+        }
 
-        // check powerup collision
-        powerUp.forEach((power) -> {
-            if (checkpowerup(paddle, power)) {
-                powerUp.remove(power);
-                switch (power.getType()) {
-                    case 1:
-                        paddle.paddleWidth += 50;
-                        break;
-                    case 2:
-                        paddle.paddleWidth -= 50;
-                        break;
-                    case 3:
-                        ball.add(new Ball(ballSpeedX, BallSpeedY, this.ball.get(0).getLeft(),
-                                this.ball.get(0).getTop()));
-                        break;
-                    case 4:
-                        ballSpeedX += 2;
-                        BallSpeedY += 2;
-                        break;
-                    case 5:
-                        ballSpeedX -= 2;
-                        BallSpeedY -= 2;
-                        break;
-                }
-            }
+        powerUp.removeIf(power -> {
             if (power.getTop() > WINDOW_HEIGHT) {
-                this.powerUp.remove(power);
+                //remove powerup if it goes out of screen
+            return true;
             }
+            if (checkpowerupColl(paddle, power)) {
+            System.out.println("scream");
+            switch (power.getType()) {
+                case 1:
+                paddle.paddleWidth += 50;
+                break;
+                case 2:
+                paddle.paddleWidth -= 50;
+                break;
+                case 3:
+                ball.add(new Ball(ballSpeedX, BallSpeedY, this.ball.get(0).getLeft(),
+                    this.ball.get(0).getTop()));
+                break;
+                case 4:
+                ballSpeedX += 2;
+                BallSpeedY += 2;
+                break;
+                case 5:
+                ballSpeedX -= 2;
+                BallSpeedY -= 2;
+                break;
+            }
+            return true;
+            }
+            return false;
         });
     }
 
@@ -112,8 +128,9 @@ public class Gameboard extends JPanel implements KeyListener {
                 ball.getHeight());
         Rectangle rbrick = new Rectangle(brick.getLeft(), brick.getTop(), brick.getHeight(), brick.getLength());
         outerloop: if (rball.intersects(rbrick) && brick.isAlive()) {
-            if (brick.destroy())
+            if (brick.destroy()){
                 powerUp.add(new PowerUp(brick.getLeft(), brick.getTop()));
+            }
             grid.reduceBrick();
             score++;
             if (ball.getRight() < brick.getLeft() || ball.getRight() > brick.getRight()) {
@@ -126,7 +143,7 @@ public class Gameboard extends JPanel implements KeyListener {
         }
     }
 
-    public boolean checkpowerup(Object paddle, Object powerUp) {
+    public boolean checkpowerupColl(Object paddle, Object powerUp) {
         Rectangle rpaddle = new Rectangle(paddle.getLeft(), paddle.getTop(), paddle.getLength(), paddle.getHeight());
         Rectangle rpowerUp = new Rectangle(powerUp.getLeft(), powerUp.getTop(), powerUp.getHeight(),
                 powerUp.getLength());
@@ -151,7 +168,6 @@ public class Gameboard extends JPanel implements KeyListener {
     public void paintComponent(Graphics g) {
         // paint components
         g.setColor(Color.black);
-        System.out.println(WINDOW_WIDTH + " " + WINDOW_HEIGHT);
         g.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
         grid.paint(g);
         ball.forEach(ball -> {

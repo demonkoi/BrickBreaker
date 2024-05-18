@@ -24,7 +24,6 @@ public class Brickbreaker extends JFrame {
     Gameboard game = new Gameboard();
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
         JFrame board = new JFrame();
         board.setVisible(true);
         board.setSize(WINDOW_HEIGHT + PADDING, WINDOW_HEIGHT + PADDING);
