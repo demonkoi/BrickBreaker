@@ -11,7 +11,7 @@ import java.awt.Graphics;
  *
  * @author lab_services_student
  */
-public class Paddle {
+public class Paddle implements Object {
     int paddleWidth = 75;
     int paddleHeight = 15;
     int x = (Gameboard.WINDOW_WIDTH / 2) - (paddleWidth);
@@ -36,7 +36,6 @@ public class Paddle {
     }
 
     public void move() {
-
         x += move;
         if (x < 0 || x > Gameboard.WINDOW_WIDTH - paddleWidth) {
             move = 0;
@@ -44,12 +43,39 @@ public class Paddle {
         }
     }
 
-    public int getX() {
+    public int getLeft() {
         return x;
     }
 
-    public int getWidth() {
+    public int getRight() {
+        return x + paddleWidth;
+    }
+
+    public int getLength() {
         return y;
     }
 
+    public int getTop() {
+        return y;
+    }
+
+    public int getBottom() {
+        return y + paddleHeight;
+    }
+
+    public int getHeight() {
+        return paddleHeight;
+    }
+
+    public int getSpeedy() {
+        return (move > 0) ? moveSpeed : -moveSpeed;
+    }
+
+    public int getSpeedx() {
+        return 0;
+    }
+
+    public boolean destroy() {
+        return true;
+    }
 }

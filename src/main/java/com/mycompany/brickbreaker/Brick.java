@@ -5,6 +5,8 @@
 package com.mycompany.brickbreaker;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.util.Random;
 
 /**
  *
@@ -78,18 +80,17 @@ public class Brick implements Object {
 
     @Override
     public int getSpeedx() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from
-                                                                       // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return 0;
     }
 
     @Override
     public int getSpeedy() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from
-                                                                       // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return 0;
     }
 
-    @Override
-    public void destroy() {
+    public boolean destroy() {
+        Random rand = new Random();
+        int r = rand.nextInt(15);
         health--;
         damage++;
         switch (health) {
@@ -105,6 +106,13 @@ public class Brick implements Object {
             case 3:
                 color = Color.darkGray;
         }
+        return (r > 11);
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'paint'");
     }
 
 }

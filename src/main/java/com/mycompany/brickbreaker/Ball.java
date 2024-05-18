@@ -11,29 +11,32 @@ import java.awt.Graphics;
  *
  * @author lab_services_student
  */
-public class Ball implements Object{
+public class Ball implements Object {
     final int size = 20;
-    int xSpeed,ySpeed,x,y;
-    public Ball(int xSpeed,int ySpeed,int x,int y){
+    int xSpeed, ySpeed, x, y;
+
+    public Ball(int xSpeed, int ySpeed, int x, int y) {
         this.xSpeed = xSpeed;
         this.ySpeed = ySpeed;
         this.x = x;
         this.y = y;
     }
-    public void paint(Graphics g){
+
+    public void paint(Graphics g) {
         g.setColor(Color.red);
         g.fillOval(x, y, size, size);
     }
-    public void move(){
-        xSpeed = x>Gameboard.WINDOW_WIDTH - size? -xSpeed : xSpeed;
-        xSpeed = x<0 ? -xSpeed : xSpeed;
-        ySpeed = y<0 ? -ySpeed : ySpeed;
-        //ySpeed = y>Gameboard.WINDOW_HEIGHT -size? -ySpeed : ySpeed;
-                
+
+    public void move() {
+        xSpeed = x > Gameboard.WINDOW_WIDTH - size ? -xSpeed : xSpeed;
+        xSpeed = x < 0 ? -xSpeed : xSpeed;
+        ySpeed = y < 0 ? -ySpeed : ySpeed;
+        // ySpeed = y>Gameboard.WINDOW_HEIGHT -size? -ySpeed : ySpeed;
+
         x += xSpeed;
         y += ySpeed;
-        
-            }
+
+    }
 
     @Override
     public int getLeft() {
@@ -42,7 +45,7 @@ public class Ball implements Object{
 
     @Override
     public int getRight() {
-        return x+size;
+        return x + size;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class Ball implements Object{
 
     @Override
     public int getBottom() {
-        return y+size;
+        return y + size;
     }
 
     @Override
@@ -74,20 +77,18 @@ public class Ball implements Object{
     public int getSpeedy() {
         return ySpeed;
     }
-    
-    public void setXSpeed(){
-        xSpeed*=-1;
+
+    public void setXSpeed() {
+        xSpeed *= -1;
     }
-    
-    public void setYSpeed(){
-        ySpeed*=-1;
+
+    public void setYSpeed() {
+        ySpeed *= -1;
     }
+
     @Override
-    public void destroy() {
-        
+    public boolean destroy() {
+        return (y > Gameboard.WINDOW_HEIGHT);
     }
 
-  
-
-  
 }

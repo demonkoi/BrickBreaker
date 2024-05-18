@@ -11,9 +11,10 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import org.w3c.dom.css.Rect;
 
 /**
  *
@@ -25,9 +26,11 @@ public class Gameboard extends JPanel implements KeyListener {
     public static final int WINDOW_HEIGHT = Brickbreaker.WINDOW_HEIGHT;
     int ballSpeedX = 5, BallSpeedY = 8;
     ArrayList<Ball> ball = new ArrayList<>();
+    ArrayList<PowerUp> powerUp = new ArrayList<>();
     Paddle paddle;
     Grid grid;
     int score = 0;
+    int life = 3;
 
     public void initGame() {
         grid = new Grid(30, 15, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -42,34 +45,92 @@ public class Gameboard extends JPanel implements KeyListener {
         System.out.println(WINDOW_WIDTH);
         for (int i = 0; i < grid.brick.length; i++) {
             for (int j = 0; j < grid.brick[0].length; j++) {
-
                 for (Ball ball : ball) {
                     checkcol(ball, grid.brick[i][j]);
                 }
             }
         }
-        for (Ball ball : ball) {
-            paddleCollision(ball);
-            ball.move();
-        }
+
+        paddle.move();
+
+        // check collision for ball and paddle and powerup
+        checkballcoll();
     }
 
-    public void checkcol(Ball a, Brick b) {
-        Rectangle ba = new Rectangle(a.getLeft() + a.getSpeedx(), a.getTop() + a.getSpeedy(), a.getHeight(),
-                a.getHeight());
-        Rectangle br = new Rectangle(b.getLeft(), b.getTop(), b.getHeight(), b.getLength());
-        outerloop: if (ba.intersects(br) && b.isAlive()) {
-            b.destroy();
+    public void checkballcoll() {
+        if (ball.size() > 0 && life > 0) {
+            ball.forEach(ball -> {
+                paddleCollision(ball);
+                ball.move();
+                if (ball.y > WINDOW_HEIGHT) {
+                    this.ball.remove(ball);
+                    System.out.println("ball size" + this.ball.size() + "life" + life);
+
+                }
+                if (ball.y > WINDOW_HEIGHT) {
+                    life--;
+                    this.ball.add(new Ball(ballSpeedX, BallSpeedY, WINDOW_WIDTH / 2, (int) (WINDOW_HEIGHT * 0.8)));
+                }
+            });
+        } else
+            System.out.println("Game Over press enter to restart");
+
+        // check powerup collision
+        powerUp.forEach((power) -> {
+            if (checkpowerup(paddle, power)) {
+                powerUp.remove(power);
+                switch (power.getType()) {
+                    case 1:
+                        paddle.paddleWidth += 50;
+                        break;
+                    case 2:
+                        paddle.paddleWidth -= 50;
+                        break;
+                    case 3:
+                        ball.add(new Ball(ballSpeedX, BallSpeedY, this.ball.get(0).getLeft(),
+                                this.ball.get(0).getTop()));
+                        break;
+                    case 4:
+                        ballSpeedX += 2;
+                        BallSpeedY += 2;
+                        break;
+                    case 5:
+                        ballSpeedX -= 2;
+                        BallSpeedY -= 2;
+                        break;
+                }
+            }
+            if (power.getTop() > WINDOW_HEIGHT) {
+                this.powerUp.remove(power);
+            }
+        });
+    }
+
+    public void checkcol(Ball ball, Brick brick) {
+        Rectangle rball = new Rectangle(ball.getLeft() + ball.getSpeedx(), ball.getTop() + ball.getSpeedy(),
+                ball.getHeight(),
+                ball.getHeight());
+        Rectangle rbrick = new Rectangle(brick.getLeft(), brick.getTop(), brick.getHeight(), brick.getLength());
+        outerloop: if (rball.intersects(rbrick) && brick.isAlive()) {
+            if (brick.destroy())
+                powerUp.add(new PowerUp(brick.getLeft(), brick.getTop()));
             grid.reduceBrick();
             score++;
-            if (a.getRight() < b.getLeft() || a.getRight() > b.getRight()) {
-                a.setXSpeed();
+            if (ball.getRight() < brick.getLeft() || ball.getRight() > brick.getRight()) {
+                ball.setXSpeed();
                 break outerloop;
             } else {
-                a.setYSpeed();
+                ball.setYSpeed();
                 break outerloop;
             }
         }
+    }
+
+    public boolean checkpowerup(Object paddle, Object powerUp) {
+        Rectangle rpaddle = new Rectangle(paddle.getLeft(), paddle.getTop(), paddle.getLength(), paddle.getHeight());
+        Rectangle rpowerUp = new Rectangle(powerUp.getLeft(), powerUp.getTop(), powerUp.getHeight(),
+                powerUp.getLength());
+        return (rpaddle.intersects(rpowerUp)) ? true : false;
     }
 
     public void paddleCollision(Ball ball) {
@@ -93,10 +154,13 @@ public class Gameboard extends JPanel implements KeyListener {
         System.out.println(WINDOW_WIDTH + " " + WINDOW_HEIGHT);
         g.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
         grid.paint(g);
-        for (Ball ball : ball) {
+        ball.forEach(ball -> {
             ball.paint(g);
-        }
-        
+        });
+        powerUp.forEach((power) -> {
+            power.paint(g);
+        });
+
         paddle.paint(g);
         // add score
         g.setFont(new Font("serif", Font.BOLD, 15));
@@ -110,11 +174,11 @@ public class Gameboard extends JPanel implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if ((e.getKeyCode() == KeyEvent.VK_LEFT)) {
+        if ((e.getKeyCode() == KeyEvent.VK_LEFT) || (e.getKeyCode() == KeyEvent.VK_A)) {
             paddle.directon(false);
             System.out.println("left");
         }
-        if ((e.getKeyCode() == KeyEvent.VK_RIGHT)) {
+        if ((e.getKeyCode() == KeyEvent.VK_RIGHT) || (e.getKeyCode() == KeyEvent.VK_D)) {
             paddle.directon(true);
             System.out.println("right");
         }
