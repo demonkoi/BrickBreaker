@@ -34,7 +34,7 @@ public class Brickbreaker extends JFrame {
         board.add(game);
         board.addKeyListener(game);
         game.initGame();
-        Timer timer = new Timer(15, (ActionEvent e) -> {
+        Timer timer = new Timer(10, (ActionEvent e) -> {
             game.gameLogic();
             board.repaint();
         });

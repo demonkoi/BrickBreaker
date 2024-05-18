@@ -53,6 +53,7 @@ public class Gameboard extends JPanel implements KeyListener {
         powerUpMove();
         // check collision for ball and paddle and powerup
         checkballcoll();
+        checkPowerUpColl();
     }
 
     public void brickColl(){
@@ -83,18 +84,22 @@ public class Gameboard extends JPanel implements KeyListener {
             });
             if (ball.isEmpty()) {
                 life--;
-                ball.add(new Ball(ballSpeedX, BallSpeedY, WINDOW_WIDTH / 2, (int) (WINDOW_HEIGHT * 0.8)));
+                ball.add(new Ball(ballSpeedX, -BallSpeedY, WINDOW_WIDTH / 2, (int) (WINDOW_HEIGHT * 0.5)));
             }
         } else {
             System.out.println("Game Over press enter to restart");
         }
 
+
+    }
+
+    public void checkPowerUpColl(){
         powerUp.removeIf(power -> {
             if (power.getTop() > WINDOW_HEIGHT) {
                 //remove powerup if it goes out of screen
             return true;
             }
-            if (checkpowerupColl(paddle, power)) {
+            if (powerupColl(paddle, power)) {
             System.out.println("scream");
             switch (power.getType()) {
                 case 1:
@@ -108,12 +113,16 @@ public class Gameboard extends JPanel implements KeyListener {
                     this.ball.get(0).getTop()));
                 break;
                 case 4:
-                ballSpeedX += 2;
-                BallSpeedY += 2;
+                ball.forEach(ball -> {
+                    ball.setYSpeed((int)(ball.getSpeedy() * 1.3));
+                    ball.setXSpeed((int)(ball.getSpeedx() * 1.3));
+                });
                 break;
                 case 5:
-                ballSpeedX -= 2;
-                BallSpeedY -= 2;
+                ball.forEach(ball -> {
+                    ball.setYSpeed((int)(ball.getSpeedy() * 0.7));
+                    ball.setXSpeed((int)(ball.getSpeedx() * 0.7));
+                });
                 break;
             }
             return true;
@@ -121,7 +130,6 @@ public class Gameboard extends JPanel implements KeyListener {
             return false;
         });
     }
-
     public void checkcol(Ball ball, Brick brick) {
         Rectangle rball = new Rectangle(ball.getLeft() + ball.getSpeedx(), ball.getTop() + ball.getSpeedy(),
                 ball.getHeight(),
@@ -134,16 +142,16 @@ public class Gameboard extends JPanel implements KeyListener {
             grid.reduceBrick();
             score++;
             if (ball.getRight() < brick.getLeft() || ball.getRight() > brick.getRight()) {
-                ball.setXSpeed();
+                ball.revSetXSpeed();
                 break outerloop;
             } else {
-                ball.setYSpeed();
+                ball.revSetYSpeed();
                 break outerloop;
             }
         }
     }
 
-    public boolean checkpowerupColl(Object paddle, Object powerUp) {
+    public boolean powerupColl(Object paddle, Object powerUp) {
         Rectangle rpaddle = new Rectangle(paddle.getLeft(), paddle.getTop(), paddle.getLength(), paddle.getHeight());
         Rectangle rpowerUp = new Rectangle(powerUp.getLeft(), powerUp.getTop(), powerUp.getHeight(),
                 powerUp.getLength());
@@ -153,7 +161,7 @@ public class Gameboard extends JPanel implements KeyListener {
     public void paddleCollision(Ball ball) {
         // check collision
         if (ball.getRight() > paddle.x && ball.x < paddle.x + paddle.paddleWidth
-                && ball.y + ball.size >= paddle.y && ball.y < paddle.y + paddle.paddleHeight) {
+                && ball.y + ball.size >= paddle.y && ball.y < paddle.y + paddle.paddleHeight && ball.ySpeed > 0) {
             ball.ySpeed *= -1;
             if (ball.x + ball.size / 2 < paddle.x + paddle.paddleWidth / 2) {
                 ball.xSpeed = -Math.abs(ball.xSpeed);
@@ -161,7 +169,6 @@ public class Gameboard extends JPanel implements KeyListener {
                 ball.xSpeed = Math.abs(ball.xSpeed);
             }
         }
-
     }
 
     @Override
@@ -178,8 +185,10 @@ public class Gameboard extends JPanel implements KeyListener {
         });
 
         paddle.paint(g);
+        g.setFont(new Font("serif", Font.BOLD, 18));
+        g.drawString("lifes: " + life, 10, 30);
         // add score
-        g.setFont(new Font("serif", Font.BOLD, 15));
+        g.setFont(new Font("serif", Font.BOLD, 18));
         g.drawString("Scores: " + score, 10, 10);
     }
 

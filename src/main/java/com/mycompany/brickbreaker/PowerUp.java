@@ -14,7 +14,7 @@ public class PowerUp implements Object {
         Random rand = new Random();
         this.type = rand.nextInt(5) + 1;
         System.out.println(type);
-        ySpeed = 2;
+        ySpeed = 3;
     }
 
     public void move() {

@@ -28,9 +28,9 @@ public class Ball implements Object {
     }
 
     public void move() {
-        xSpeed = x > Gameboard.WINDOW_WIDTH - size ? -xSpeed : xSpeed;
-        xSpeed = x < 0 ? -xSpeed : xSpeed;
-        ySpeed = y < 0 ? -ySpeed : ySpeed;
+        xSpeed = x > Gameboard.WINDOW_WIDTH - size && xSpeed > 0 ? -xSpeed : xSpeed;
+        xSpeed = x < 0 && xSpeed < 0 ? -xSpeed : xSpeed;
+        ySpeed = y < 0 && ySpeed < 0 ? -ySpeed : ySpeed;
         // ySpeed = y>Gameboard.WINDOW_HEIGHT -size? -ySpeed : ySpeed;
 
         x += xSpeed;
@@ -77,12 +77,17 @@ public class Ball implements Object {
     public int getSpeedy() {
         return ySpeed;
     }
-
-    public void setXSpeed() {
+    public void setXSpeed(int xSpeed) {
+        this.xSpeed = xSpeed;
+    }
+    public void setYSpeed(int ySpeed) {
+        this.ySpeed = ySpeed;
+    }
+    public void revSetXSpeed() {
         xSpeed *= -1;
     }
 
-    public void setYSpeed() {
+    public void revSetYSpeed() {
         ySpeed *= -1;
     }
 
